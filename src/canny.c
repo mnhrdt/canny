@@ -151,6 +151,7 @@ int main(int argc, char *const *argv)
 	double s = 2; 		//s : sigma, filter variance 
 	double low_thr=3, high_thr = 10;		// Thresholds
 	bool accGrad = false;
+	bool clean_boundary = false;
 
 	// First step: parse command line argument and check that parameter
 	// syntax is valid, no check for parameter value vailidity here, just
@@ -204,11 +205,16 @@ int main(int argc, char *const *argv)
 			continue;
 		}
 		if (!strcmp(arg, "-a")) {
-			accGrad = true;		
+			accGrad = true;
 			argc -= 2, argv += 2;
 			continue;
 		}
-		error("Wrong agument : %s", arg);		
+		if (!strcmp(arg, "-b")) {
+			clean_boundary = true;
+			argc -= 2, argv += 2;
+			continue;
+		}
+		error("Wrong agument : %s", arg);
 	}
 
 	// Second step: validate the set of parameter to be used in training, we
@@ -309,6 +315,13 @@ int main(int argc, char *const *argv)
 	free(grad);
 	free(theta);
 	free(data);
+
+	if (clean_boundary) {
+		for(size_t x = 0 ; x < nx ; x++)
+		for(size_t y = 0 ; y < ny ; y++)
+		if (x < 2 || x > nx-3 || y < 2 || y > ny-3)
+			output[y*nx+x] = 0;
+	}
 
 	/* write the mask as a PNG image */
 	int write  = write_png_u8(output_file, output, nx, ny, 1);

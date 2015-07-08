@@ -15,14 +15,14 @@ HDR	= src/*.h
 BIN	= canny
 
 
-COPT	= -O3 -funroll-loops -fomit-frame-pointer
+COPT	= -O3
 CFLAGS	=  -std=c99 -W -Wall $(COPT)
 LIBS	= -lpng -lfftw3 -lm
 
 default: $(BIN)
 
 canny	: $(SRC) $(HDR)
-	$(CC) $(CFLAGS) -o canny $(LIBS) $(SRC)
+	$(CC) $(CFLAGS) -o canny $(SRC) $(LIBS)
 	$(RM) src/*.o	
 	
 .PHONY	: clean distclean
